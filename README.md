@@ -40,13 +40,13 @@ Hey! Thanks for looking at my code and considering me as a potential future team
 Basically, this is more of an optimistic happy path implementation.
 
 ### Other
-After reading the instructions thoroughly and deciding to use Deno I spent a little over an hour on the code. I wouldn't say that I was taking a leisurely pace, but I definitely wasn't hurrying. 
+After reading the instructions thoroughly and deciding to use Deno I spent a little over an hour on the code and another 30-40 minutes writing the notes. I wouldn't say that I was taking a leisurely pace, but I definitely wasn't hurrying. 
 
 Furthermore, here are some of the things that affected the time spent:
 - spent maybe 15 minutes confirming I could get a compiled Deno app to read the args, the actual files, and write to a file
 - did not consider multiple "add songs to playlists" changes in one file until partway through
 - did not consider duplicate song ids until I started writing these notes
-- decided to do more input validation after writing these notes
+- did not consider some invalid output until after writing the notes (stuff like playlists with a user or songs that don't exist)
 
 Note: the above are not excuses, but when a task takes longer than expected I like to give (and receive) some notes about where we think some time was lost and identify if there are things we can improve for the future. In this case, I could have more carefully considered what expected input in the `changes.json` file could have been before coding.
 
