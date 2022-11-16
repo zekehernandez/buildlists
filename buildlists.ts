@@ -28,39 +28,36 @@ type Change = {
   playlist_id: string,
 }
 
-async function main() {
-  if (Deno.args.length !== 3) {
-    console.error("There should be 3 arguments: an input file, a changes file, and an output file")
-    return
-  }
-  
-  const [ inputFilename, changesFilename, outputFilename ] = Deno.args
-
-  const inputJson = await Deno.readTextFile(inputFilename)
-  const changesJson = await Deno.readTextFile(changesFilename)
-
-  const { users, playlists, songs }: Input = JSON.parse(inputJson)
-  const { changes }: { changes: Change[] } = JSON.parse(changesJson)
-
+export function applyChanges({ users, playlists, songs } : Input, changes: Change[]) {
   // Compiled changes to apply
   const newPlaylists: Playlist[] = []
   const songsToAdd = new Map<string, string[]>()
   const deletedPlaylistIds = new Set<string>()
+
+  const userIds = new Set<string>(users.map(u => u.id))
+  const playlistIds = new Set<string>(playlists.map(p => p.id))
+  const songIds = new Set<string>(songs.map(s => s.id))
 
   // Get highest playlist id and start with the one after that
   let playlistId = playlists.reduce((maxID, { id }) => Math.max(maxID, Number(id)), 0) + 1
 
   changes.forEach(change => {
     if (change.type === 'ADD_PLAYLIST') {
-      newPlaylists.push({ 
-        id: `${playlistId++}`,
-        owner_id: change.user_id,
-        song_ids: change.song_ids,
-      })
+      const validSongsIds = change.song_ids.filter(id => songIds.has(id))
+      if (userIds.has(change.user_id) && validSongsIds.length > 0) {
+        newPlaylists.push({ 
+          id: `${playlistId++}`,
+          owner_id: change.user_id,
+          song_ids: validSongsIds,
+        })
+      }
     } else if (change.type === 'ADD_SONGS') {
-      // There could be multiple "changes" to add songs
-      const currentUpdates = songsToAdd.get(change.playlist_id) ?? []
-      songsToAdd.set(change.playlist_id, [...currentUpdates, ...change.song_ids])
+      const validSongsIds = change.song_ids.filter(id => songIds.has(id))
+      if (playlistIds.has(change.playlist_id) && validSongsIds.length > 0) {
+        // There could be multiple "changes" to add songs
+        const currentUpdates = songsToAdd.get(change.playlist_id) ?? []
+        songsToAdd.set(change.playlist_id, [...currentUpdates, ...validSongsIds])
+      }
     } else if (change.type === 'DELETE_PLAYLIST') {
       deletedPlaylistIds.add(change.playlist_id)
     } else {
@@ -76,21 +73,38 @@ async function main() {
     const newSongs = songsToAdd.get(playlist.id) ?? []
     const updatedPlaylist = 
       newSongs.length === 0
-         ? playlist
-         : {
+        ? playlist
+        : {
           ...playlist,
-          song_ids: [...playlist.song_ids, ...newSongs]
-         }
- 
+          song_ids: Array.from(new Set([...playlist.song_ids, ...newSongs]))
+        }
+
     return [...updated, updatedPlaylist]
   }, []);
 
 
-  const output = {
+  return {
     users,
     playlists: [...updatedPlaylists, ...newPlaylists],
     songs,
   }
+}
+
+async function main() {
+  if (Deno.args.length !== 3) {
+    console.error("There should be 3 arguments: an input file, a changes file, and an output file")
+    return
+  }
+  
+  const [ inputFilename, changesFilename, outputFilename ] = Deno.args
+
+  const inputJson = await Deno.readTextFile(inputFilename)
+  const changesJson = await Deno.readTextFile(changesFilename)
+
+  const input: Input = JSON.parse(inputJson)
+  const { changes }: { changes: Change[] } = JSON.parse(changesJson)
+
+  const output = applyChanges(input, changes)
 
   await Deno.writeTextFile(outputFilename, JSON.stringify(output))
 }

@@ -3,7 +3,7 @@
     {
       "type": "ADD_SONGS",
       "user_id": "",
-      "song_ids": ["8"],
+      "song_ids": ["8", "100"],
       "playlist_id": "3"
     },
     {
@@ -21,8 +21,14 @@
     {
       "type": "ADD_SONGS",
       "user_id": "",
-      "song_ids": ["26"],
+      "song_ids": ["26", "8", "12"],
       "playlist_id": "3"
+    },
+    {
+      "type": "ADD_PLAYLIST",
+      "user_id": "100",
+      "song_ids": ["2", "21"],
+      "playlist_id": ""
     }
   ]
 }
