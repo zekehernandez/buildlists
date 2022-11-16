@@ -1,0 +1,28 @@
+{
+	"changes": [
+    {
+      "type": "ADD_SONGS",
+      "user_id": "",
+      "song_ids": ["8"],
+      "playlist_id": "3"
+    },
+    {
+      "type": "ADD_PLAYLIST",
+      "user_id": "4",
+      "song_ids": ["7", "20"],
+      "playlist_id": ""
+    },
+    {
+      "type": "DELETE_PLAYLIST",
+      "user_id": "",
+      "song_ids": [],
+      "playlist_id": "2"
+    },
+    {
+      "type": "ADD_SONGS",
+      "user_id": "",
+      "song_ids": ["26"],
+      "playlist_id": "3"
+    }
+  ]
+}
