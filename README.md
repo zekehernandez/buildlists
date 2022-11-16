@@ -52,4 +52,8 @@ Note: the above are not excuses, but when a task takes longer than expected I li
 
 Lastly, I'll sleep on it before submitting because that's when more stuff surfaces in my mind.
 
+Post sleep update:
+- I just cast the `string` playlist id to a number to get the next playlist id. I'd probably consider using a GUID.
+- I would maybe consider splitting `applyChanges` to `compileChanges` and `applyChanges` to be able to test those as smaller units
+
 - Zeke
